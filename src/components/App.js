@@ -12,15 +12,20 @@ const App = () => {
   const BASE_URL = "https://content.newtonschool.co/v1/pr/main/users";
   const [userId, setUserId] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(LoadingStatus.NOT_STARTED);
-  const [userData, setUserData] = React.useState({
-    id: "",
-    email: "",
-    name: "",
-    phone: "",
-    webiste: "",
-  });
+  const [userData, setUserData] = React.useState();
 
-  const handleOnClick = () => {};
+  const handleOnClick = () => {
+    setIsLoading(LoadingStatus.IN_PROGRESS);
+    setTimeout(() => {
+      fetch(`${BASE_URL}/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUserData(data);
+          setIsLoading(LoadingStatus.SUCCESS);
+          console.log(userData);
+        });
+    }, 2000);
+  };
 
   const onChangeHandler = (event) => {
     setUserId(event.target.value);
@@ -41,14 +46,19 @@ const App = () => {
         Get User
       </button>
 
-      <div id="data">
+      {isLoading === LoadingStatus.NOT_STARTED ? (
         <h1>Click on the button to get the user</h1>
-        <h4 id="id">{userData.id}</h4>
-        <h4 id="email">{userData.email}</h4>
-        <h4 id="name">{userData.name}</h4>
-        <h4 id="phone">{userData.phone}</h4>
-        <h4 id="website">{userData.website}</h4>
-      </div>
+      ) : isLoading === LoadingStatus.IN_PROGRESS ? (
+        <Loader />
+      ) : (
+        <>
+          <h4 id="id">{userData.id}</h4>
+          <h4 id="email">{userData.email}</h4>
+          <h4 id="name">{userData.name}</h4>
+          <h4 id="phone">{userData.phone}</h4>
+          <h4 id="website">{userData.website}</h4>
+        </>
+      )}
     </div>
   );
 };
